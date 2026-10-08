@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Launcher Control</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgpu@4.22.0/dist/tf-backend-webgpu.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@4.22.0/dist/tf-backend-wasm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Launcher Control</h1>
+    <span id="conn" class="pill">connecting…</span>
+    <span id="status" class="pill"></span>
+  </header>
+
+  <main>
+    <section class="view">
+      <div class="stage">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <p id="hint" class="hint">Loading detection model…</p>
+    </section>
+
+    <aside class="panel">
+      <fieldset>
+        <legend>Camera &amp; detection</legend>
+        <label>Camera <select id="camera"></select></label>
+        <label>Target <select id="targetClass"></select></label>
+        <label>Min confidence <input id="minScore" type="range" min="0.2" max="0.9" step="0.05" value="0.5"> <output id="minScoreOut">0.50</output></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Mode</legend>
+        <label><input type="radio" name="mode" value="fixed"> Fixed camera (calibrated)</label>
+        <label><input type="radio" name="mode" value="mounted"> Camera mounted on launcher</label>
+        <p id="modeHelp" class="small"></p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Tracking</legend>
+        <button id="track" class="toggle">Start tracking <kbd>T</kbd></button>
+        <label><input id="autoFire" type="checkbox"> Auto-fire when locked on</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Manual <span class="small">(arrow keys)</span></legend>
+        <div class="pad">
+          <button data-dir="up" class="up">▲</button>
+          <button data-dir="left" class="left">◀</button>
+          <button data-dir="right" class="right">▶</button>
+          <button data-dir="down" class="down">▼</button>
+        </div>
+        <button id="home">Home (find limits)</button>
+        <p class="small">Position: pan <span id="pan">–</span> ms · tilt <span id="tilt">–</span> ms</p>
+      </fieldset>
+
+      <fieldset id="calibration">
+        <legend>Calibration (fixed mode)</legend>
+        <p class="small">Jog the launcher until it points at a spot, then <b>shift-click</b> that spot in the video. Repeat for 3–5 spots spread across the frame.</p>
+        <p class="small">Points: <span id="calCount">0</span> · pan <span id="calPan">✗</span> · tilt <span id="calTilt">✗</span></p>
+        <button id="calReset">Clear calibration</button>
+      </fieldset>
+
+      <fieldset class="weapons">
+        <legend>Weapons</legend>
+        <button id="arm" class="toggle">Arm</button>
+        <button id="fire" class="fire" disabled>FIRE <kbd>Space</kbd></button>
+      </fieldset>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>
